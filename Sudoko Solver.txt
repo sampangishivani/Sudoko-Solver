@@ -1,0 +1,54 @@
+const int N = 9; // Grid size
+int grid[N][N];  // 9x9 Sudoku grid
+bool isValid(int row, int col, int num) {
+    // Check if 'num' is not already present in the row, column, or the 3x3 subgrid
+    for (int i = 0; i < N; i++) {
+        if (grid[row][i] == num || grid[i][col] == num || grid[3 * (row / 3) + i / 3][3 * (col / 3) + i % 3] == num) {
+            return false;
+        }
+    }
+    return true;
+}
+bool solveSudoku() {
+    int row, col;
+    // Find an unassigned cell
+    if (!findUnassignedCell(row, col)) {
+        return true; // All cells are filled, the puzzle is solved
+    }
+
+    // Try placing numbers from 1 to 9 in the cell
+    for (int num = 1; num <= 9; num++) {
+        if (isValid(row, col, num)) {
+            // If 'num' can be placed, set it in the grid
+            grid[row][col] = num;
+
+            // Recursively try to solve the rest of the puzzle
+            if (solveSudoku()) {
+                return true; // Solution found
+            }
+
+            // If placing 'num' doesn't lead to a solution, backtrack and try a different number
+            grid[row][col] = 0;
+        }
+    }
+
+    return false; // No solution found
+}
+bool findUnassignedCell(int& row, int& col) {
+    for (row = 0; row < N; row++) {
+        for (col = 0; col < N; col++) {
+            if (grid[row][col] == 0) {
+                return true; // Found an unassigned cell
+            }
+        }
+    }
+    return false; // No unassigned cell left
+}
+void printGrid() {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cout << grid[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
